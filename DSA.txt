@@ -1,0 +1,45 @@
+Data Structures and Algorithms Syllabus
+
+Detailed data structures and algorithms syllabus as prescribed by various Universities and colleges in India are as under. You can download the syllabus in data structures and algorithms pdf form.
+
+Unit I
+
+Introduction: Dynamic aspects of operations on data, Characteristics of data structures, Creation and manipulation of data structures, Operations on data structures, Types of data structures – linear and nonlinear. Introduction to algorithm: Asymptotic notations, Analysis of algorithms: Time and Space complexity.
+
+Unit II
+
+Arrays and Linked Lists: Arrays: Dynamic memory allocation, one-dimensional arrays, multidimensional arrays, operations on arrays, storage – Row major order, Column major order. Linked lists: types of linked lists – singly, doubly and circularly linked lists, operations on linked lists.
+
+Unit III
+
+Stacks and Queues: Stacks: Implementation of stacks– array and linked list, operations on stacks, Applications of Stacks, Notations – infix, prefix and postfix, Conversion and evaluation of arithmetic expressions using Stacks. Queues: Implementation of queues– array and linked list, operations on queues, Types of queues – queue, double ended queue and priority queue.
+
+Unit IV
+
+Trees and Graphs: Trees: Binary tree, Binary search tree, Threaded binary tree, Height balanced trees, Tries, Heaps, Hash tables. Graph traversals: Breadth-First Search, Depth First Search, Shortest path: Depth-first search in directed and undirected graphs. Union-find data structure and applications. Directed acyclic graphs; topological sort.
+
+Unit V
+
+Searching and Sorting: Searching: Linear search, Binary search and Hashing. Algorithms and data structures for sorting: Insertion Sort, Bubble sort, Selection Sort, Merge sort, Quick Sort, Heap sort, Radix sort, Bucket sort. Algorithm design techniques: Divide and conquer, Greedy approach, dynamic programming.Data Structures and Algorithms Syllabus
+
+Detailed data structures and algorithms syllabus as prescribed by various Universities and colleges in India are as under. You can download the syllabus in data structures and algorithms pdf form.
+
+Unit I
+
+Introduction: Dynamic aspects of operations on data, Characteristics of data structures, Creation and manipulation of data structures, Operations on data structures, Types of data structures – linear and nonlinear. Introduction to algorithm: Asymptotic notations, Analysis of algorithms: Time and Space complexity.
+
+Unit II
+
+Arrays and Linked Lists: Arrays: Dynamic memory allocation, one-dimensional arrays, multidimensional arrays, operations on arrays, storage – Row major order, Column major order. Linked lists: types of linked lists – singly, doubly and circularly linked lists, operations on linked lists.
+
+Unit III
+
+Stacks and Queues: Stacks: Implementation of stacks– array and linked list, operations on stacks, Applications of Stacks, Notations – infix, prefix and postfix, Conversion and evaluation of arithmetic expressions using Stacks. Queues: Implementation of queues– array and linked list, operations on queues, Types of queues – queue, double ended queue and priority queue.
+
+Unit IV
+
+Trees and Graphs: Trees: Binary tree, Binary search tree, Threaded binary tree, Height balanced trees, Tries, Heaps, Hash tables. Graph traversals: Breadth-First Search, Depth First Search, Shortest path: Depth-first search in directed and undirected graphs. Union-find data structure and applications. Directed acyclic graphs; topological sort.
+
+Unit V
+
+Searching and Sorting: Searching: Linear search, Binary search and Hashing. Algorithms and data structures for sorting: Insertion Sort, Bubble sort, Selection Sort, Merge sort, Quick Sort, Heap sort, Radix sort, Bucket sort. Algorithm design techniques: Divide and conquer, Greedy approach, dynamic programming.
