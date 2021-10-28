@@ -141,3 +141,71 @@ operations on those structures, and look in detail at developing efficient proce
 storing, sorting, searching and analysis. The idea is that once the basic ideas and examples
 covered in these notes are understood, dealing with more complex problems in the future
 should be straightforward.
+                                          
+                                          
+                                          Chapter 4
+Searching
+An important and recurring problem in computing is that of locating information. More
+succinctly, this problem is known as searching . This is a good topic to use for a preliminary
+exploration of the various issues involved in algorithm design.
+4.1 Requirements for searching
+Clearly, the information to be searched has to first be represented (or encoded ) somehow.
+This is where data structures come in. Of course, in a computer, everything is ultimately
+represented as sequences of binary digits (bits), but this is too low level for most purposes.
+We need to develop and study useful data structures that are closer to the way humans think,
+or at least more structured than mere sequences of bits. This is because it is humans who
+have to develop and maintain the software systems – computers merely run them.
+After we have chosen a suitable representation, the represented information has to be
+processed somehow. This is what leads to the need for algorithms . In this case, the process
+of interest is that of searching. In order to simplify matters, let us assume that we want
+to search a collection of integer numbers (though we could equally well deal with strings of
+characters, or any other data type of interest). To begin with, let us consider:
+1. The most obvious and simple representation.
+2. Two potential algorithms for processing with that representation.
+As we have already noted, arrays are one of the simplest possible ways of representing col-
+lections of numbers (or strings, or whatever), so we shall use that to store the information to
+be searched. Later we shall look at more complex data structures that may make storing and
+searching more efficient.
+Suppose, for example, that the set of integers we wish to search is {1,4,17,3,90,79,4,6,81}.
+We can write them in an array a as
+a = [1,4,17,3,90,79,4,6,81]
+If we ask where 17 is in this array, the answer is 2, the index of that element. If we ask where 91
+is, the answer is nowhere. It is useful to be able to represent nowhere by a number that is
+not used as a possible index. Since we start our index counting from 0, any negative number
+would do. We shall follow the convention of using the number −1 to represent nowhere. Other
+(perhaps better) conventions are possible, but we will stick to this here.
+21
+4.2 Specification of the search problem
+We can now formulate a specification of our search problem using that data structure:
+Given an array a and integer x, find an integer i such that
+1. if there is no j such that a[j] is x, then i is −1,
+2. otherwise, i is any j for which a[j] is x.
+The first clause says that if x does not occur in the array a then i should be −1, and the second
+says that if it does occur then i should be a position where it occurs. If there is more than one
+position where x occurs, then this specification allows you to return any of them – for example,
+this would be the case if a were [17,13,17] and x were 17. Thus, the specification is ambiguous.
+Hence different algorithms with different behaviours can satisfy the same specification – for
+example, one algorithm may return the smallest position at which x occurs, and another may
+return the largest. There is nothing wrong with ambiguous specifications. In fact, in practice,
+they occur quite often.
+4.3 A simple algorithm: Linear Search
+We can conveniently express the simplest possible algorithm in a form of pseudocode which
+reads like English, but resembles a computer program without some of the precision or detail
+that a computer usually requires:
+// This assumes we are given an array a of size n and a key x.
+For i = 0,1,...,n-1,
+if a[i] is equal to x,
+then we have a suitable i and can terminate returning i.
+If we reach this point,
+then x is not in a and hence we must terminate returning -1.
+Some aspects, such as the ellipsis “...”, are potentially ambiguous, but we, as human beings,
+know exactly what is meant, so we do not need to worry about them. In a programming
+language such as C or Java, one would write something that is more precise like:
+for ( i = 0 ; i < n ; i++ ) {
+if ( a[i] == x ) return i;
+}
+return -1;
+In the case of Java , this would be within a method of a class, and more details are needed,
+such as the parameter a for the method and a declaration of the auxiliary variable i. In the
+case of C , this would be within a function, and similar missing details are needed. In either,
+there would need to be additional code to output the result in a suitable forma
