@@ -1,0 +1,131 @@
+• MakeList(element,list), which puts an element at the top of an existing list.
+Using those, our last example list can be constructed as
+MakeList(3,MakeList(1,MakeList(4,MakeList(2,MakeList(5,EmptyList))))).
+and it is clearly possible to construct any list in this way.
+This inductive approach to data structure creation is very powerful, and we shall use
+it many times throughout these notes. It starts with the “base case”, the EmptyList, and
+then builds up increasingly complex lists by repeatedly applying the “induction step”, the
+MakeList(element,list) operator.
+It is obviously also important to be able to get back the elements of a list, and we no
+longer have an item index to use like we have with an array. The way to proceed is to note
+that a list is always constructed from the first element and the rest of the list. So, conversely,
+from a non-empty list it must always be possible to get the first element and the rest. This
+can be done using the two selectors , also called accessor methods :
+• first(list), and
+• rest(list).
+The selectors will only work for non-empty lists (and give an error or exception on the empty
+list), so we need a condition which tells us whether a given list is empty:
+• isEmpty(list)
+This will need to be used to check every list before passing it to a selector.
+We call everything a list that can be constructed by the constructors EmptyList and
+MakeList, so that with the selectors first and rest and the condition isEmpty, the following
+relationships are automatically satisfied (i.e. true):
+• isEmpty(EmptyList)
+• not isEmpty(MakeList(x,l)) (for any x and l)
+• first(MakeList(x,l)) = x
+• rest(MakeList(x,l)) = l
+In addition to constructing and getting back the components of lists, one may also wish to
+destructively change lists. This would be done by so-called mutators which change either the
+first element or the rest of a non-empty list:
+• replaceFirst(x,l)
+• replaceRest(r,l)
+For instance, with l = [3,1,4,2,5], applying replaceFirst(9,l) changes l to [9,1,4,2,5].
+and then applying replaceRest([6,2,3,4],l) changes it to [9,6,2,3,4].
+We shall see that the concepts of constructors , selectors and conditions are common to
+virtually all abstract data types. Throughout these notes, we will be formulating our data
+representations and algorithms in terms of appropriate definitions of them.
+13
+XML Representation
+In order to communicate data structures between different computers and possibly different
+programming languages, XML (eXtensible Markup Language) has become a quasi-standard.
+The above list could be represented in XML as:
+<ol>
+<li>3</li>
+<li>1</li>
+<li>4</li>
+<li>2</li>
+<li>5</li>
+</ol>
+However, there are usually many different ways to represent the same object in XML. For
+instance, a cell-oriented representation of the above list would be:
+<cell>
+<first>3</first>
+<rest>
+<cell>
+<first>1</first>
+<rest>
+<cell>
+<first>4</first>
+<rest>
+<cell>
+<first>2</first>
+<rest>
+<first>5</first>
+<rest>EmptyList</rest>
+</rest>
+</cell>
+</rest>
+</cell>
+</rest>
+</cell>
+</rest>
+</cell>
+While this looks complicated for a simple list, it is not, it is just a bit lengthy. XML is flexible
+enough to represent and communicate very complicated structures in a uniform way.
+Implementation of Lists
+There are many different implementations possible for lists, and which one is best will depend
+on the primitives offered by the programming language being used.
+The programming language Lisp and its derivates, for instance, take lists as the most
+important primitive data structure. In some other languages, it is more natural to implement
+14
+lists as arrays. However, that can be problematic because lists are conceptually not limited in
+size, which means array based implementation with fixed-sized arrays can only approximate
+the general concept. For many applications, this is not a problem because a maximal number
+of list members can be determined a priori (e.g., the maximum number of students taking one
+particular module is limited by the total number of students in the University). More general
+purpose implementations follow a pointer based approach, which is close to the diagrammatic
+representation given above. We will not go into the details of all the possible implementations
+of lists here, but such information is readily available in the standard textbooks.
+3.2 Recursion
+We previously saw how iteration based on for-loops was a natural way to process collections of
+items stored in arrays. When items are stored as linked-lists, there is no index for each item,
+and recursion provides the natural way to process them. The idea is to formulate procedures
+which involve at least one step that invokes (or calls) the procedure itself. We will now look
+at how to implement two important derived procedures on lists, last and append, which
+illustrate how recursion works.
+To find the last element of a list l we can simply keep removing the first remaining item
+till there are no more left. This algorithm can be written in pseudocode as:
+last(l) {
+if ( isEmpty(l) )
+error(‘Error: empty list in last’)
+elseif ( isEmpty(rest(l)) )
+return first(l)
+else
+return last(rest(l))
+}
+The running time of this depends on the length of the list, and is proportional to that length,
+since last is called as often as there are elements in the list. We say that the procedure
+has linear time complexity , that is, if the length of the list is increased by some factor, the
+execution time is increased by the same factor. Compared to the constant time complexity
+which access to the last element of an array has, this is quite bad. It does not mean, however,
+that lists are inferior to arrays in general, it just means that lists are not the ideal data
+structure when a program has to access the last element of a long list very often.
+Another useful procedure allows us to append one list l2 to another list l1. Again, this
+needs to be done one item at a time, and that can be accomplished by repeatedly taking the
+first remaining item of l1 and adding it to the front of the remainder appended to l2:
+append(l1,l2) {
+if ( isEmpty(l1) )
+return l2
+else
+return MakeList(first(l1),append(rest(l1),l2))
+}
+The time complexity of this procedure is proportional to the length of the first list, l1, since
+we have to call append as often as there are elements in l1.
+15
+3.3 Stacks
+Stacks are, on an abstract level, equivalent to linked lists. They are the ideal data structure
+to model a First-In-Last-Out (FILO), or Last-In-First-Out (LIFO), strategy in search.
+Graphical Representation
+Their relation to linked lists means that their graphical representation can be the same, but
+one has to be careful about the order of the items. For instance, the stack created by inserting
+the numbers [3,1,4,2,5] in that order would be represented as:
