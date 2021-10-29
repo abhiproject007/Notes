@@ -1,0 +1,309 @@
+When we do want to run them, we need to provide a more precise specification, and would
+normally write the algorithm in pseudocode, such as the following recursive procedure:
+isIn(value v, tree t) {
+if ( isEmpty(t) )
+return false
+elseif ( v == root(t) )
+return true
+elseif ( v < root(t) )
+return isIn(v, left(t))
+else
+return isIn(v, right(t))
+}
+Each recursion restricts the search to either the left or right subtree as appropriate, reducing
+the search tree height by one, so the algorithm is guaranteed to terminate eventually.
+In this case, the recursion can easily be transformed into a while-loop:
+isIn(value v, tree t) {
+while ( (not isEmpty(t)) and (v != root(t)) )
+if (v < root(t) )
+t = left(t)
+else
+t = right(t)
+return ( not isEmpty(t) )
+}
+Here, each iteration of the while-loop restricts the search to either the left or right subtree as
+appropriate. The only way to leave the loop is to have found the required value, or to only
+have an empty tree remaining, so the procedure only needs to return whether or not the final
+tree is empty.
+In practice, we often want to have more than a simple true/false returned. For example,
+if we are searching for a student ID, we usually want a pointer to the full record for that
+student, not just a confirmation that they exist. In that case, we could store a record pointer
+associated with the search key (ID) at each tree node, and return the record pointer or a null
+pointer, rather than a simple true or false, when an item is found or not found. Clearly,
+the basic tree structures we have been discussing can be elaborated in many different ways
+like this to form whatever data-structure is most appropriate for the problem at hand, but,
+as noted above, we can abstract out such details for current purposes.
+7.6 Time complexity of insertion and search
+As always, it is important to understand the time complexity of our algorithms. Both item
+insertion and search in a binary search tree will take at most as many comparisons as the
+height of the tree plus one. At worst, this will be the number of nodes in the tree. But how
+many comparisons are required on average? To answer this question, we need to know the
+average height of a binary search tree. This can be calculated by taking all possible binary
+search trees of a given size n and measuring each of their heights, which is by no means an
+43
+easy task. The trouble is that there are many ways of building the same binary search tree
+by successive insertions.
+As we have seen above, perfectly balanced trees achieve minimal height for a given number
+of nodes, and it turns out that the more balanced a tree, the more ways there are of building
+it. This is demonstrated in the figure below:3
+1
+2
+2
+1 3
+The only way of getting the tree on the left hand side is by inserting 3, 2, 1 into the empty
+tree in that order. The tree on the right, however, can be reached in two ways: Inserting in
+the order 2, 1, 3 or in the order 2, 3, 1. Ideally, of course, one would only use well-balanced
+trees to keep the height minimal, but they do not have to be perfectly balanced to perform
+better than binary search trees without restrictions.
+Carrying out exact tree height calculations is not straightforward, so we will not do that
+here. However, if we assume that all the possible orders in which a set of n nodes might be
+inserted into a binary search tree are equally likely, then the average height of a binary search
+tree turns out to be O(log2 n). It follows that the average number of comparisons needed to
+search a binary search tree is O(log2 n), which is the same complexity we found for binary
+search of a sorted array. However, inserting a new node into a binary search tree also depends
+on the tree height and requires O(log2 n) steps, which is better than the O(n) complexity of
+inserting an item into the appropriate point of a sorted array.
+Interestingly, the average height of a binary search tree is quite a bit better than the
+average height of a general binary tree consisting of the same n nodes that have not been
+built into a binary search tree. The average height of a general binary tree is actually O(√n).
+The reason for that is that there is a relatively large proportion of high binary trees that are
+not valid binary search trees.
+7.7 Deleting nodes from a binary search tree
+Suppose, for some reason, an item needs to be removed or deleted from a binary search tree.
+It would obviously be rather inefficient if we had to rebuild the remaining search tree again
+from scratch. For n items that would require n steps of O(log2 n) complexity, and hence have
+overall time complexity of O(nlog2 n). By comparison, deleting an item from a sorted array
+would only have time complexity O(n), and we certainly want to do better than that. Instead,
+we need an algorithm that produces an updated binary search tree more efficiently. This is
+more complicated than one might assume at first sight, but it turns out that the following
+algorithm works as desired:
+• If the node in question is a leaf, just remove it.
+• If only one of the node’s subtrees is non-empty, ‘move up’ the remaining subtree.
+• If the node has two non-empty sub-trees, find the ‘left-most’ node occurring in the right
+sub-tree (this is the smallest item in the right subtree). Use this node to overwrite the
+44
+one that is to be deleted. Replace the left-most node by its right subtree, if this exists;
+otherwise just delete it.
+The last part works because the left-most node in the right sub-tree is guaranteed to be bigger
+than all nodes in the left sub-tree, smaller than all the other nodes in the right sub-tree, and
+have no left sub-tree itself. For instance, if we delete the node with value 11 from the tree in
+Figure 6.1, we get the tree displayed in Figure 7.1.10
+8
+3
+1
+7
+11
+9 14
+12 15
+6
+10
+8
+3
+1
+7
+9 14
+15
+6
+12
+Figure 7.1: Example of node deletion in a binary search tree.
+In practice, we need to turn the above algorithm (specified in words) into a more detailed
+algorithm specified using the primitive binary tree operators:
+delete(value v, tree t) {
+if ( isEmpty(t) )
+error(‘Error: given item is not in given tree’)
+else
+if ( v < root(t) ) // delete from left sub-tree
+return MakeTree(root(t), delete(v,left(t)), right(t));
+else if ( v > root(t) ) // delete from right sub-tree
+return MakeTree(root(t), left(t), delete(v,right(t)));
+else // the item v to be deleted is root(t)
+if ( isEmpty(left(t)) )
+return right(t)
+elseif ( isEmpty(right(t)) )
+return left(t)
+else // difficult case with both subtrees non-empty
+return MakeTree(smallestNode(right(t)), left(t),
+removeSmallestNode(right(t))
+}
+If the empty tree condition is met, it means the search item is not in the tree, and an
+appropriate error message should be returned.
+The delete procedure uses two sub-algorithms to find and remove the smallest item of a
+given sub-tree. Since the relevant sub-trees will always be non-empty, these sub-algorithms can
+be written with that precondition. However, it is always the responsibility of the programmer
+to ensure that any preconditions are met whenever a given procedure is used, so it is important
+to say explicitly what the preconditions are. It is often safest to start each procedure with a
+45
+check to determine whether the preconditions are satisfied, with an appropriate error message
+produced when they are not, but that may have a significant time cost if the procedure is
+called many times. First, to find the smallest node, we have:
+smallestNode(tree t) {
+// Precondition: t is a non-empty binary search tree
+if ( isEmpty(left(t) )
+return root(t)
+else
+return smallestNode(left(t));
+}
+which uses the fact that, by the definition of a binary search tree, the smallest node of t is
+the left-most node. It recursively looks in the left sub-tree till it reaches an empty tree, at
+which point it can return the root. The second sub-algorithm uses the same idea:
+removeSmallestNode(tree t) {
+// Precondition: t is a non-empty binary search tree
+if ( isEmpty(left(t) )
+return right(t)
+else
+return MakeTree(root(t), removeSmallestNode(left(t)), right(t))
+}
+except that the remaining tree is returned rather than the smallest node.
+These procedures are further examples of recursive algorithms. In each case, the recursion
+is guaranteed to terminate, because every recursive call involves a smaller tree, which means
+that we will eventually find what we are looking for or reach an empty tree.
+It is clear from the algorithm that the deletion of a node requires the same number of
+steps as searching for a node, or inserting a new node, i.e. the average height of the binary
+search tree, or O(log2 n) where n is the total number of nodes on the tree.
+7.8 Checking whether a binary tree is a binary search tree
+Building and using binary search trees as discussed above is usually enough. However, another
+thing we sometimes need to do is check whether or not a given binary tree is a binary search
+tree, so we need an algorithm to do that. We know that an empty tree is a (trivial) binary
+search tree, and also that all nodes in the left sub-tree must be smaller than the root and
+themselves form a binary search tree, and all nodes in the right sub-tree must be greater than
+the root and themselves form a binary search tree. Thus the obvious algorithm is:
+isbst(tree t) {
+if ( isEmpty(t) )
+return true
+else
+return ( allsmaller(left(t),root(t)) and isbst(left(t))
+and allbigger(right(t),root(t)) and isbst(right(t)) )
+}
+46
+allsmaller(tree t, value v) {
+if ( isEmpty(t) )
+return true
+else
+return ( (root(t) < v) and allsmaller(left(t),v)
+and allsmaller(right(t),v) )
+}
+allbigger(tree t, value v) {
+if ( isEmpty(t) )
+return true
+else
+return ( (root(t) > v) and allbigger(left(t),v)
+and allbigger(right(t),v) )
+}
+However, the simplest or most obvious algorithm is not always the most efficient. Exercise:
+identify what is inefficient about this algorithm, and formulate a more efficient algorithm.
+7.9 Sorting using binary search trees
+Sorting is the process of putting a collection of items in order. We shall formulate and discuss
+many sorting algorithms later, but we are already able to present one of them.
+The node values stored in a binary search tree can be printed in ascending order by
+recursively printing each left sub-tree, root, and right sub-tree in the right order as follows:
+printInOrder(tree t) {
+if ( not isEmpty(t) ) {
+printInOrder(left(t))
+print(root(t))
+printInOrder(right(t))
+}
+}
+Then, if the collection of items to be sorted is given as an array a of known size n, they can
+be printed in sorted order by the algorithm:
+sort(array a of size n) {
+t = EmptyTree
+for i = 0,1,...,n-1
+t = insert(a[i],t)
+printInOrder(t)
+}
+which starts with an empty tree, inserts all the items into it using insert(v,t) to give a
+binary search tree, and then prints them in order using printInOrder(t). Exercise: modify
+this algorithm so that instead of printing the sorted values, they are put back into the original
+array in ascending order.
+47
+7.10 Balancing binary search trees
+If the items are added to a binary search tree in random order, the tree tends to be fairly
+well balanced with height not much more than log2 n. However, there are many situations
+where the added items are not in random order, such as when adding new student IDs. In
+the extreme case of the new items being added in ascending order, the tree will be one long
+branch off to the right, with height n log2 n.
+If all the items to be inserted into a binary search tree are already sorted, it is straight-
+forward to build a perfectly balanced binary tree from them. One simply has to recursively
+build a binary tree with the middle (i.e., median) item as the root, the left subtree made up
+of the smaller items, and the right subtree made up of the larger items. This idea can be used
+to rebalance any existing binary search tree, because the existing tree can easily be output
+into a sorted array as discussed in Section 7.9. Exercise: Write an algorithm that rebalances
+a binary search tree in this way, and work out its time complexity.
+Another way to avoid unbalanced binary search trees is to rebalance them from time to
+time using tree rotations . Such tree rotations are best understood as follows: Any binary
+search tree containing at least two nodes can clearly be drawn in one of the two forms:
+where B and D are the required two nodes to be rotated, and A, C and E are binary search
+sub-trees (any of which may be empty). The two forms are related by left and right tree
+rotations which clearly preserve the binary search tree property. In this case, any nodes in
+sub-tree A would be shifted up the tree by a right rotation, and any nodes in sub-tree E would
+be shifted up the tree by a left rotation. For example, if the left form had A consisting of two
+nodes, and C and E consisting of one node, the height of the tree would be reduced by one
+and become perfectly balanced by a right tree rotation.
+Typically, such tree rotations would need to be applied to many different sub-trees of a
+full tree to make it perfectly balanced. For example, if the left form had C consisting of two
+nodes, and A and E consisting of one node, the tree would be balanced by first performing
+a left rotation of the A-B-C sub-tree, followed by a right rotation of the whole tree. In
+practice, finding suitable sequences of appropriate tree rotations to rebalance an arbitrary
+binary search tree is not straightforward, but it is possible to formulate systematic balancing
+algorithms that are more efficient than outputting the whole tree and rebuilding it.
+7.11 Self-balancing AVL trees
+Self-balancing binary search trees avoid the problem of unbalanced trees by automatically
+rebalancing the tree throughout the insertion process to keep the height close to log2 n at
+each stage. Obviously, there will be a cost involved in such rebalancing, and there will be a
+48
+trade-off between the time involved in rebalancing and the time saved by the reduced height
+of the tree, but generally it is worthwhile.
+The earliest type of self-balancing binary search tree was the AVL tree (named after its
+inventors G.M. Adelson-Velskii and E.M. Landis). These maintain the difference in heights
+of the two sub-trees of all nodes to be at most one. This requires the tree to be periodically
+rebalanced by performing one or more tree rotations as discussed above, but the complexity
+of insertion, deletion and search remain at O(log2 n).
+The general idea is to keep track of the balance factor for each node, which is the height
+of the left sub-tree minus the height of the right sub-tree. By definition, all the nodes in an
+AVL-tree will have a balance factor in the integer range [−1,1]. However, insertion or deletion
+of a node could leave that in the wider range [−2,2] requiring a tree-rotation to bring it back
+into AVL form. Exercise: Find some suitable algorithms for performing efficient AVL tree
+rotations. Compare them with other self-balancing approaches such as red-black trees .
+7.12 B-trees
+A B-tree is a generalization of a self-balancing binary search tree in which each node can hold
+more than one search key and have more than two children. The structure is designed to
+allow more efficient self-balancing, and offers particular advantages when the node data needs
+to be kept in external storage such as disk drives. The standard (Knuth) definition is:
+Definition. A B-tree of order m is a tree which satisfies the following conditions:
+• Every node has at most m children.
+• Every non-leaf node (except the root node) has at least m/2 children.
+• The root node, if it is not a leaf node, has at least two children.
+• A non-leaf node with c children contains c−1 search keys which act as separation values
+to divide its sub-trees.
+• All leaf nodes appear in the same level, and carry information.
+There appears to be no definitive answer to the question of what the “B” in “B-Tree” stands
+for. It is certainly not “Binary”, but it could equally well be “balanced”, “broad” or “bushy”,
+or even “Boeing” because they were invented by people at Boeing Research Labs.
+The standard representation of simple order 4 example with 9 search keys would be:
+The search keys held in each node are ordered (e.g., 1, 2, 5 in the example), and the non-leaf
+node’s search keys (i.e., the items 8 and 17 in the example) act as separation values to divide
+49
+the contents of its sub-trees in much the same way that a node’s value in a binary search
+tree separates the values held in its two sub-trees. For example, if a node has 3 child nodes
+(or sub-trees) then it must have 2 separation values s1 and s2. All values in the leftmost
+subtree will be less than s1, all values in the middle subtree will be between s1 and s2, and all
+values in the rightmost subtree will be greater than s2. That allows insertion and searching
+to proceed from the root down in a similar way to binary search trees.
+The restriction on the number of children to lie between m/2 and m means that the best
+case height of an order m B-tree containing n search keys is logmn and the worst case height
+is logm/2n. Clearly the costs of insertion, deletion and searching will all be proportional to
+the tree height, as in a binary search tree, which makes them very efficient. The requirement
+that all the leaf nodes are at the same level means that B-trees are always balanced and thus
+have minimal height, though rebalancing will often be required to restore that property after
+insertions and deletions.
+The order of a B-tree is typically chosen to optimize a particular application and imple-
+mentation. To maintain the conditions of the B-tree definition, non-leaf nodes often have to
+be split or joined when new items are inserted into or deleted from the tree (which is why
+there is a factor of two between the minimum and maximum number of children), and rebal-
+ancing is often required. This renders the insertion and deletion algorithms somewhat more
+complicated than for binary search trees. An advantage of B-trees over self balancing binary
+search trees, however, is that the range of child nodes means that rebalancing is required less
+frequently. A disadvantage is that there may be more space wastage because nodes will rarely
+be completely full. There is also the cost of keeping the items within each node ordered, and
+having to search among them, but for reasonably small orders m, that cost is low. Exercise:
+find some suitable insertion, deletion and rebalancing algorithms for B-trees
