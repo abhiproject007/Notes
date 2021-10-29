@@ -1,0 +1,299 @@
+Figure 6.1, the children of node 8 are nodes 3 and 11. Conversely, the node (there is at most
+one) connected to the given node (via an edge) on the level above, is its parent . For instance,
+node 11 is the parent of node 9 (and of node 14 as well). Nodes that have the same parent
+are known as siblings – siblings are, by definition, always on the same level.
+If a node is the child of a child of . . . of a another node then we say that the first node is a
+descendent of the second node. Conversely, the second node is an ancestor of the first node.
+Nodes which do not have any children are known as leaves (e.g., the nodes labelled with 1, 7,
+10, 12, and 15 in Figure 6.1).
+A path is a sequence of connected edges from one node to another. Trees have the property
+that for every node there is a unique path connecting it with the root. In fact, that is another
+possible definition of a tree. The depth or level of a node is given by the length of this path.
+Hence the root has level 0, its children have level 1, and so on. The maximal length of a
+path in a tree is also called the height of the tree. A path of maximal length always goes
+from the root to a leaf. The size of a tree is given by the number of nodes it contains. We
+shall normally assume that every tree is finite, though generally that need not be the case.
+The tree in Figure 6.1 has height 3 and size 11. A tree consisting of just of one node has
+height 0 and size 1. The empty tree obviously has size 0 and is defined (conveniently, though
+somewhat artificially) to have height −1.
+Like most data structures, we need a set of primitive operators (constructors, selectors
+and conditions) to build and manipulate the trees. The details of those depend on the type
+and purpose of the tree. We will now look at some particularly useful types of tree.
+6.2 Quad-trees
+A quadtree is a particular type of tree in which each leaf-node is labelled by a value and each
+non-leaf node has exactly four children. It is used most often to partition a two dimensional
+space (e.g., a pixelated image) by recursively dividing it into four quadrants.
+Formally, a quadtree can be defined to be either a single node with a number or value
+(e.g., in the range 0 to 255), or a node without a value but with four quadtree children: lu,
+ll, ru, and rl. It can thus be defined “inductively ” by the following rules:
+Definition. A quad tree is either
+(Rule 1) a root node with a value, or
+(Rule 2) a root node without a value and four quad tree children: lu, ll, ru, and rl.
+in which Rule 1 is the “base case” and Rule 2 is the “induction step”.
+We say that a quadtree is primitive if it consists of a single node/number, and that can
+be tested by the corresponding condition:
+• isValue(qt), which returns true if quad-tree qt is a single node.
+To build a quad-tree we have two constructors :
+• baseQT(value), which returns a single node quad-tree with label value.
+• makeQT(luqt,ruqt,llqt,rlqt), which builds a quad-tree from four constituent quad-
+trees luqt,llqt,ruqt,rlqt.
+32
+Then to extract components from a quad-tree we have four selectors :
+• lu(qt), which returns the left-upper quad-tree.
+• ru(qt), which returns the right-upper quad-tree.
+• ll(qt), which returns the left-lower quad-tree.
+• rl(qt), which returns the right-lower quad-tree.
+which can be applied whenever isValue(qt) is false. For cases when isValue(qt) is true, we
+could define an operator value(qt) that returns the value, but conventionally we simply say
+that qt itself is the required value.
+Quad-trees of this type are most commonly used to store grey-value pictures (with 0
+representing black and 255 white). A simple example would be:10
+20
+3040
+50 60 70
+80110
+100
+120
+90
+0
+We can then create algorithms using the operators to perform useful manipulations of the
+representation. For example, we could rotate a picture qt by 180◦ using:
+rotate(qt) {
+if ( isValue(qt) )
+return qt
+else return makeQT( rotate(rl(qt)), rotate(ll(qt)),
+rotate(ru(qt)), rotate(lu(qt)) )
+}
+or we could compute average values by recursively averaging the constituent sub-trees.
+There exist numerous variations of this general idea, such coloured quadtrees which store
+value-triples that represent colours rather than grey-scale, and edge quad-trees which store
+lines and allow curves to be represented with arbitrary precision.
+6.3 Binary trees
+Binary trees are the most common type of tree used in computer science. A binary tree is a
+tree in which every node has at most two children, and can be defined “inductively” by the
+following rules:
+33
+Definition. A binary tree is either
+(Rule 1) the empty tree EmptyTree, or
+(Rule 2) it consists of a node and two binary trees, the left subtree and right subtree.
+Again, Rule 1 is the “base case” and Rule 2 is the “induction step”. This definition may appear
+circular, but actually it is not, because the subtrees are always simpler than the original one,
+and we eventually end up with an empty tree.
+You can imagine that the (infinite) collection of (finite) trees is created in a sequence of
+days. Day 0 is when you “get off the ground” by applying Rule 1 to get the empty tree. On
+later days, you are allowed to use any trees that you have created on earlier days to construct
+new trees using Rule 2. Thus, for example, on day 1 you can create exactly trees that have
+a root with a value, but no children (i.e. both the left and right subtrees are the empty tree,
+created at day 0). On day 2 you can use a new node with value, with the empty tree and/or
+the one-node tree, to create more trees. Thus, binary trees are the objects created by the
+above two rules in a finite number of steps. The height of a tree, defined above, is the number
+of days it takes to create it using the above two rules, where we assume that only one rule is
+used per day, as we have just discussed. (Exercise: work out the sequence of steps needed to
+create the tree in Figure 6.1 and hence prove that it is in fact a binary tree.)
+6.4 Primitive operations on binary trees
+The primitive operators for binary trees are fairly obvious. We have two constructors which
+are used to build trees:
+• EmptyTree, which returns an empty tree,
+• MakeTree(v,l,r), which builds a binary tree from a root node with label v and two
+constituent binary trees l and r,
+a condition to test whether a tree is empty:
+• isEmpty(t), which returns true if tree t is the EmptyTree,
+and three selectors to break a non-empty tree into its constituent parts:
+• root(t), which returns the value of the root node of binary tree t,
+• left(t), which returns the left sub-tree of binary tree t,
+• right(t), which returns the right sub-tree of binary tree t.
+These operators can be used to create all the algorithms we might need for manipulating
+binary trees.
+For convenience though, it is often a good idea to define derived operators that allow us to
+write simpler, more readable algorithms. For example, we can define a derived constructor:
+• Leaf(v) = MakeTree(v,EmptyTree,EmptyTree)
+that creates a tree consisting of a single node with label v, which is the root and the unique
+leaf of the tree at the same time. Then the tree in Figure 6.1 can be constructed as:
+34
+t = MakeTree(8, MakeTree(3,Leaf(1),MakeTree(6,EmptyTree,Leaf(7))),
+MakeTree(11,MakeTree(9,EmptyTree,Leaf(10)),MakeTree(14,Leaf(12),Leaf(15))))
+which is much simpler than the construction using the primitive operators:
+t = MakeTree(8, MakeTree(3,MakeTree(1,EmptyTree,EmptyTree),
+MakeTree(6,EmptyTree,MakeTree(7,EmptyTree,EmptyTree))),
+MakeTree(11,MakeTree(9,EmptyTree,MakeTree(10,EmptyTree,EmptyTree)),
+MakeTree(14,MakeTree(12,EmptyTree,EmptyTree),
+MakeTree(15,EmptyTree,EmptyTree))))
+Note that the selectors can only operate on non-empty trees. For example, for the tree t
+defined above we have
+root(left(left(t)) = 1,
+but the expression
+root(left(left(left(t))))
+does not make sense because
+left(left(left(t))) = EmptyTree
+and the empty tree does not have a root. In a language such as Java , this would typically
+raise an exception. In a language such as C , this would cause an unpredictable behaviour,
+but if you are lucky, a core dump will be produced and the program will be aborted with
+no further harm. When writing algorithms, we need to check the selector arguments using
+isEmpty(t) before allowing their use.
+The following equations should be obvious from the primitive operator definitions:
+root(MakeTree(v,l,r)) = v
+left(MakeTree(v,l,r)) = l
+right(MakeTree(v,l,r)) = r
+isEmpty(EmptyTree) = true
+isEmpty(MakeTree(v,l,r)) = false
+The following makes sense only under the assumption that t is a non-empty tree:
+MakeTree(root(t),left(t),right(t)) = t
+It just says that if we break apart a non-empty tree and use the pieces to build a new tree,
+then we get an identical tree back.
+It is worth emphasizing that the above specifications of quad-trees and binary trees are
+further examples of abstract data types : Data types for which we exhibit the constructors
+and destructors and describe their behaviour (using equations such as defined above for lists,
+stacks, queues, quad-trees and binary trees), but for which we explicitly hide the implemen-
+tational details. The concrete data type used in an implementation is called a data structure.
+For example, the usual data structures used to implement the list and tree data types are
+records and pointers – but other implementations are possible.
+The important advantage of abstract data types is that we can develop algorithms without
+having to worry about the details of the representation of the data or the implementation. Of
+course, everything will ultimately be represented as sequences of bits in a computer, but we
+clearly do not generally want to have to think in such low level terms.
+35
+6.5 The height of a binary tree
+Binary trees don’t have a simple relation between their size n and height h. The maximum
+height of a binary tree with n nodes is (n −1), which happens when all non-leaf nodes have
+precisely one child, forming something that looks like a chain. On the other hand, suppose we
+have n nodes and want to build from them a binary tree with minimal height. We can achieve
+this by ‘filling’ each successive level in turn, starting from the root. It does not matter where
+we place the nodes on the last (bottom) level of the tree, as long as we don’t start adding to
+the next level before the previous level is full. Terminology varies, but we shall say that such
+trees are perfectly balanced or height balanced , and we shall see later why they are optimal for
+many of our purposes. Basically, if done appropriately, many important tree-based operations
+(such as searching) take as many steps as the height of the tree, so minimizing the height
+minimizes the time needed to perform those operations.
+We can easily determine the maximum number of nodes that can fit into a binary tree of
+a given height h. Calling this size function s(h), we obtain:
+h s(h)
+0 1
+1 3
+2 7
+3 15
+In fact, it seems fairly obvious that s(h) = 1 + 2 + 4 + ···+ 2h = 2h+1 −1. This hypothesis
+can be proved by induction using the definition of a binary tree as follows:
+(a) The base case applies to the empty tree that has height h = −1, which is consistent
+with s(−1) = 2−1+1 −1 = 20 −1 = 1 −1 = 0 nodes being stored.
+(b) Then for the induction step, a tree of height h + 1 has a root node plus two subtrees of
+height h. By the induction hypothesis, each subtree can store s(h) = 2h+1 −1 nodes,
+so the total number of nodes that can fit in a height h + 1 tree is 1 + 2 ×(2h+1 −1) =
+1 + 2h+2 −2 = 2(h+1)+1 −1 = s(h + 1). It follows that if s(h) is correct for the empty
+tree, which it was shown to be in the base case above, then it is correct for all h.
+An obvious potential problem with any proof by induction like this, however, is the need to
+identify an induction hypothesis to start with, and that is not always easy.
+Another way to proceed here would be to simply sum the series s(h) = 1 + 2 + 4 + ···+ 2h
+algebraically to get the answer. Sometimes, however, the relevant series is too complicated
+to sum easily. An alternative is to try to identify two different expressions for s(h + 1) as a
+function of s(h), and solve them for s(h). Here, since level h of a tree clearly has 2h nodes,
+we can explicitly add in the 2h+1 nodes of the last level of the height h + 1 tree to give
+s(h + 1) = s(h) + 2h+1
+Also, since a height h + 1 tree is made up of a root node plus two trees of height h
+s(h + 1) = 1 + 2s(h)
+Then subtracting the second equation from the first gives
+s(h) = 2h+1 −1
+36
+which is the required answer. From this we can get an expression for h
+h = log2 (s + 1) −1 ≈log2 s
+in which the approximation is valid for large s.
+Hence a perfectly balanced tree consisting of n nodes has height approximately log2 n.
+This is good, because log2 n is very small, even for relatively large n:
+n log2 n
+2 1
+32 5
+1,024 10
+1,048,576 20
+We shall see later how we can use binary trees to hold data in such a way that any search has
+at most as many steps as the height of the tree. Therefore, for perfectly balanced trees we
+can reduce the search time considerably as the table demonstrates. However, it is not always
+easy to create perfectly balanced trees, as we shall also see later.
+6.6 The size of a binary tree
+Usually a binary tree will not be perfectly balanced, so we will need an algorithm to determine
+its size, i.e. the number of nodes it contains.
+This is easy if we use recursion. The terminating case is very simple: the empty tree has
+size 0. Otherwise, any binary tree will always be assembled from a root node, a left sub-tree
+l, and a right sub-tree r, and its size will be the sum of the sizes of its components, i.e. 1
+for the root, plus the size of l, plus the size of r. We have already defined the primitive
+operator isEmpty(t) to check whether a binary tree t is empty, and the selectors left(t) and
+right(t) which return the left and right sub-trees of binary tree t. Thus we can easily define
+the procedure size(t), which takes a binary tree t and returns its size, as follows:
+size(t) {
+if ( isEmpty(t) )
+return 0
+else return (1 + size(left(t)) + size(right(t)))
+}
+This recursively processes the whole tree, and we know it will terminate because the trees
+being processed get smaller with each call, and will eventually reach an empty tree which
+returns a simple value.
+6.7 Implementation of trees
+The natural way to implement trees is in terms of records and pointers , in a similar way to how
+linked lists were represented as two-cells consisting of a pointer to a list element and a pointer
+to the next two-cell. Obviously, the details will depend on how many children each node can
+have, but trees can generally be represented as data structures consisting of a pointer to the
+root-node content (if any) and pointers to the children sub-trees. The inductive definition
+37
+of trees then allows recursive algorithms on trees to operate efficiently by simply passing the
+pointer to the relevant root-node, rather than having to pass complete copies of whole trees.
+How data structures and pointers are implemented in different programming languages will
+vary, of course, but the general idea is the same.
+A binary tree can be implemented as a data record for each node consisting simply of the
+node value and two pointers to the children nodes. Then MakeTree simply creates a new data
+record of that form, and root, left and right simply read out the relevant contents of the
+record. The absence of a child node can be simply represented by a Null Pointer.
+6.8 Recursive algorithms
+Some people have difficulties with recursion. A source of confusion is that it appears that
+“the algorithm calls itself” and it might therefore get confused about what it is operating on.
+This way of putting things, although suggestive, can be misleading. The algorithm itself is a
+passive entity, which actually cannot do anything at all, let alone call itself. What happens is
+that a processor (which can be a machine or a person) executes the algorithm. So what goes
+on when a processor executes a recursive algorithm such as the size(t) algorithm above? An
+easy way of understanding this is to imagine that whenever a recursive call is encountered,
+new processors are given the task with a copy of the same algorithm.
+For example, suppose that John (the first processor in this task) wants to compute the
+size of a given tree t using the above recursive algorithm. Then, according to the above
+algorithm, John first checks whether it is empty. If it is, he simply returns zero and finishes
+his computation. If it isn’t empty, then his tree t must have left and right subtrees l and
+r (which may, or may not, be empty) and he can extract them using the selectors left(t)
+and right(t). He can then ask two of his students, say Steve and Mary, to execute the
+same algorithm, but for the trees l and r. When they finish, say returning results m and n
+respectively, he computes and returns 1+m+n, because his tree has a root node in addition to
+the left and right sub-trees. If Steve and Mary aren’t given empty trees, they will themselves
+have to delegate executions of the same algorithm, with their sub-trees, to other people. Thus,
+the algorithm is not calling itself. What happens, is that there are many people running their
+own copies of the same algorithm on different trees.
+In this example, in order to make things understandable, we assumed that each person
+executes a single copy of the algorithm. However, the same processor, with some difficulty,
+can impersonate several processors, in such a way that it achieves the same result as the
+execution involving many processors. This is achieved via the use of a stack that keeps track
+of the various positions of the same algorithm that are currently being executed – but this
+knowledge is not needed for our purposes.
+Note that there is nothing to stop us keeping count of the recursions by passing integers
+along with any data structures being operated on, for example:
+function(int n, tree t) {
+// terminating condition and return
+.
+// procedure details
+.
+return function(n-1, t2)
+}
+38
+so we can do something n times, or look for the nth item, etc. The classic example is the
+recursive factorial function:
+factorial(int n) {
+if ( n == 0 ) return 1
+return n*factorial(n-1)
+}
+Another example, with two termination or base-case conditions, is a direct implementation
+of the recursive definition of Fibonacci numbers (see Appendix A.5):
+F(int n) {
+if ( n == 0 ) return 0
+if ( n == 1 ) return 1
+return F(n-1) + F(n-2)
+}
+though this is an extremely inefficient algorithm for computing these numbers. Exercise: Show
+that the time complexity of this algorithm is O(2n), and that there exists a straightforward
+iterative algorithm that has only O(n) time complexity. Is it possible to create an O(n)
+recursive algorithm to compute these numbers?
+In most cases, however, we won’t need to worry about counters, because the relevant data
+structure has a natural end point condition, such as isEmpty(x), that will bring the recursion
+to an end
