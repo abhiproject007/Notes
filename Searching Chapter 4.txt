@@ -1,0 +1,152 @@
+Chapter 4
+Searching
+An important and recurring problem in computing is that of locating information. More
+succinctly, this problem is known as searching . This is a good topic to use for a preliminary
+exploration of the various issues involved in algorithm design.
+4.1 Requirements for searching
+Clearly, the information to be searched has to first be represented (or encoded ) somehow.
+This is where data structures come in. Of course, in a computer, everything is ultimately
+represented as sequences of binary digits (bits), but this is too low level for most purposes.
+We need to develop and study useful data structures that are closer to the way humans think,
+or at least more structured than mere sequences of bits. This is because it is humans who
+have to develop and maintain the software systems – computers merely run them.
+After we have chosen a suitable representation, the represented information has to be
+processed somehow. This is what leads to the need for algorithms . In this case, the process
+of interest is that of searching. In order to simplify matters, let us assume that we want
+to search a collection of integer numbers (though we could equally well deal with strings of
+characters, or any other data type of interest). To begin with, let us consider:
+1. The most obvious and simple representation.
+2. Two potential algorithms for processing with that representation.
+As we have already noted, arrays are one of the simplest possible ways of representing col-
+lections of numbers (or strings, or whatever), so we shall use that to store the information to
+be searched. Later we shall look at more complex data structures that may make storing and
+searching more efficient.
+Suppose, for example, that the set of integers we wish to search is {1,4,17,3,90,79,4,6,81}.
+We can write them in an array a as
+a = [1,4,17,3,90,79,4,6,81]
+If we ask where 17 is in this array, the answer is 2, the index of that element. If we ask where 91
+is, the answer is nowhere. It is useful to be able to represent nowhere by a number that is
+not used as a possible index. Since we start our index counting from 0, any negative number
+would do. We shall follow the convention of using the number −1 to represent nowhere. Other
+(perhaps better) conventions are possible, but we will stick to this here.
+21
+4.2 Specification of the search problem
+We can now formulate a specification of our search problem using that data structure:
+Given an array a and integer x, find an integer i such that
+1. if there is no j such that a[j] is x, then i is −1,
+2. otherwise, i is any j for which a[j] is x.
+The first clause says that if x does not occur in the array a then i should be −1, and the second
+says that if it does occur then i should be a position where it occurs. If there is more than one
+position where x occurs, then this specification allows you to return any of them – for example,
+this would be the case if a were [17,13,17] and x were 17. Thus, the specification is ambiguous.
+Hence different algorithms with different behaviours can satisfy the same specification – for
+example, one algorithm may return the smallest position at which x occurs, and another may
+return the largest. There is nothing wrong with ambiguous specifications. In fact, in practice,
+they occur quite often.
+4.3 A simple algorithm: Linear Search
+We can conveniently express the simplest possible algorithm in a form of pseudocode which
+reads like English, but resembles a computer program without some of the precision or detail
+that a computer usually requires:
+// This assumes we are given an array a of size n and a key x.
+For i = 0,1,...,n-1,
+if a[i] is equal to x,
+then we have a suitable i and can terminate returning i.
+If we reach this point,
+then x is not in a and hence we must terminate returning -1.
+Some aspects, such as the ellipsis “...”, are potentially ambiguous, but we, as human beings,
+know exactly what is meant, so we do not need to worry about them. In a programming
+language such as C or Java, one would write something that is more precise like:
+for ( i = 0 ; i < n ; i++ ) {
+if ( a[i] == x ) return i;
+}
+return -1;
+In the case of Java , this would be within a method of a class, and more details are needed,
+such as the parameter a for the method and a declaration of the auxiliary variable i. In the
+case of C , this would be within a function, and similar missing details are needed. In either,
+there would need to be additional code to output the result in a suitable format.
+In this case, it is easy to see that the algorithm satisfies the specification (assuming n is
+the correct size of the array) – we just have to observe that, because we start counting from
+zero, the last position of the array is its size minus one. If we forget this, and let i run from
+0 to n instead, we get an incorrect algorithm. The practical effect of this mistake is that the
+execution of this algorithm gives rise to an error when the item to be located in the array is
+22
+actually not there, because a non-existing location is attempted to be accessed. Depending
+on the particular language, operating system and machine you are using, the actual effect of
+this error will be different. For example, in C running under Unix, you may get execution
+aborted followed by the message “segmentation fault”, or you may be given the wrong answer
+as the output. In Java, you will always get an error message.
+4.4 A more efficient algorithm: Binary Search
+One always needs to consider whether it is possible to improve upon the performance of a
+particular algorithm, such as the one we have just created. In the worst case, searching an
+array of size n takes n steps. On average, it will take n/2 steps. For large collections of data,
+such as all web-pages on the internet, this will be unacceptable in practice. Thus, we should
+try to organize the collection in such a way that a more efficient algorithm is possible. As we
+shall see later, there are many possibilities, and the more we demand in terms of efficiency,
+the more complicated the data structures representing the collections tend to become. Here
+we shall consider one of the simplest – we still represent the collections by arrays, but now we
+enumerate the elements in ascending order. The problem of obtaining an ordered list from
+any given list is known as sorting and will be studied in detail in a later chapter.
+Thus, instead of working with the previous array [1,4,17,3,90,79,4,6,81], we would work
+with [1,3,4,4,6,17,79,81,90], which has the same items but listed in ascending order. Then
+we can use an improved algorithm, which in English-like pseudocode form is:
+// This assumes we are given a sorted array a of size n and a key x.
+// Use integers left and right (initially set to 0 and n-1) and mid.
+While left is less than right,
+set mid to the integer part of (left+right)/2, and
+if x is greater than a[mid],
+then set left to mid+1,
+otherwise set right to mid.
+If a[left] is equal to x,
+then terminate returning left,
+otherwise terminate returning -1.
+and would correspond to a segment of C or Java code like:
+/* DATA */
+int a = [1,3,4,4,6,17,79,81,90];
+int n = 9;
+int x = 79;
+/* PROGRAM */
+int left = 0, right = n-1, mid;
+while ( left < right ) {
+mid = ( left + right ) / 2;
+if ( x > a[mid] ) left = mid+1;
+else right = mid;
+}
+if ( a[left] == x ) return left;
+else return -1;
+23
+This algorithm works by repeatedly splitting the array into two segments, one going from left
+to mid, and the other going from mid + 1 to right, where mid is the position half way from
+left to right, and where, initially, left and right are the leftmost and rightmost positions of
+the array. Because the array is sorted, it is easy to see which of each pair of segments the
+searched-for item x is in, and the search can then be restricted to that segment. Moreover,
+because the size of the sub-array going from locations left to right is halved at each iteration
+of the while-loop, we only need log2 n steps in either the average or worst case. To see that this
+runtime behaviour is a big improvement, in practice, over the earlier linear-search algorithm,
+notice that log2 1000000 is approximately 20, so that for an array of size 1000000 only 20
+iterations are needed in the worst case of the binary-search algorithm, whereas 1000000 are
+needed in the worst case of the linear-search algorithm.
+With the binary search algorithm, it is not so obvious that we have taken proper care
+of the boundary condition in the while loop. Also, strictly speaking, this algorithm is not
+correct because it does not work for the empty array (that has size zero), but that can easily
+be fixed. Apart from that, is it correct? Try to convince yourself that it is, and then try to
+explain your argument-for-correctness to a colleague. Having done that, try to write down
+some convincing arguments, maybe one that involves a loop invariant and one that doesn’t.
+Most algorithm developers stop at the first stage, but experience shows that it is only when
+we attempt to write down seemingly convincing arguments that we actually find all the subtle
+mistakes. Moreover, it is not unusual to end up with a better/clearer algorithm after it has
+been modified to make its correctness easier to argue.
+It is worth considering whether linked-list versions of our two algorithms would work, or
+offer any advantages. It is fairly clear that we could perform a linear search through a linked
+list in essentially the same way as with an array, with the relevant pointer returned rather
+than an index. Converting the binary search to linked list form is problematic, because there
+is no efficient way to split a linked list into two segments. It seems that our array-based
+approach is the best we can do with the data structures we have studied so far. However, we
+shall see later how more complex data structures (trees) can be used to formulate efficient
+recursive search algorithms.
+Notice that we have not yet taken into account how much effort will be required to sort
+the array so that the binary search algorithm can work on it. Until we know that, we cannot
+be sure that using the binary search algorithm really is more efficient overall than using the
+linear search algorithm on the original unsorted array. That may also depend on further
+details, such as how many times we need to performa a search on the set of n items – just
+once, or as many as n times. We shall return to these issues later. First we need to consider
+in more detail how to compare algorithm efficiency in a reliable manne
