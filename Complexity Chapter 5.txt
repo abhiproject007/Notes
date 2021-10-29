@@ -1,0 +1,228 @@
+Chapter 5
+Efficiency and Complexity
+We have already noted that, when developing algorithms, it is important to consider how
+efficient they are, so we can make informed choices about which are best to use in particular
+circumstances. So, before moving on to study increasingly complex data structures and
+algorithms, we first look in more detail at how to measure and describe their efficiency.
+5.1 Time versus space complexity
+When creating software for serious applications, there is usually a need to judge how quickly
+an algorithm or program can complete the given tasks. For example, if you are programming
+a flight booking system, it will not be considered acceptable if the travel agent and customer
+have to wait for half an hour for a transaction to complete. It certainly has to be ensured
+that the waiting time is reasonable for the size of the problem, and normally faster execution
+is better. We talk about the time complexity of the algorithm as an indicator of how the
+execution time depends on the size of the data structure.
+Another important efficiency consideration is how much memory a given program will
+require for a particular task, though with modern computers this tends to be less of an issue
+than it used to be. Here we talk about the space complexity as how the memory requirement
+depends on the size of the data structure.
+For a given task, there are often algorithms which trade time for space, and vice versa.
+For example, we will see that, as a data storage device, hash tables have a very good time
+complexity at the expense of using more memory than is needed by other algorithms. It is
+usually up to the algorithm/program designer to decide how best to balance the trade-off for
+the application they are designing.
+5.2 Worst versus average complexity
+Another thing that has to be decided when making efficiency considerations is whether it is
+the average case performance of an algorithm/program that is important, or whether it is
+more important to guarantee that even in the worst case the performance obeys certain rules.
+For many applications, the average case is more important, because saving time overall is
+usually more important than guaranteeing good behaviour in the worst case. However, for
+time-critical problems, such as keeping track of aeroplanes in certain sectors of air space, it
+may be totally unacceptable for the software to take too long if the worst case arises.
+25
+Again, algorithms/programs often trade-off efficiency of the average case against efficiency
+of the worst case. For example, the most efficient algorithm on average might have a par-
+ticularly bad worst case efficiency. We will see particular examples of this when we consider
+efficient algorithms for sorting and searching.
+5.3 Concrete measures for performance
+These days, we are mostly interested in time complexity . For this, we first have to decide how
+to measure it. Something one might try to do is to just implement the algorithm and run it,
+and see how long it takes to run, but that approach has a number of problems. For one, if
+it is a big application and there are several potential algorithms, they would all have to be
+programmed first before they can be compared. So a considerable amount of time would be
+wasted on writing programs which will not get used in the final product. Also, the machine on
+which the program is run, or even the compiler used, might influence the running time. You
+would also have to make sure that the data with which you tested your program is typical for
+the application it is created for. Again, particularly with big applications, this is not really
+feasible. This empirical method has another disadvantage: it will not tell you anything useful
+about the next time you are considering a similar problem.
+Therefore complexity is usually best measured in a different way. First, in order to not be
+bound to a particular programming language or machine architecture, it is better to measure
+the efficiency of the algorithm rather than that of its implementation. For this to be possible,
+however, the algorithm has to be described in a way which very much looks like the program to
+be implemented, which is why algorithms are usually best expressed in a form of pseudocode
+that comes close to the implementation language.
+What we need to do to determine the time complexity of an algorithm is count the number
+of times each operation will occur, which will usually depend on the size of the problem. The
+size of a problem is typically expressed as an integer, and that is typically the number of items
+that are manipulated. For example, when describing a search algorithm, it is the number of
+items amongst which we are searching, and when describing a sorting algorithm, it is the
+number of items to be sorted. So the complexity of an algorithm will be given by a function
+which maps the number of items to the (usually approximate) number of time steps the
+algorithm will take when performed on that many items.
+In the early days of computers, the various operations were each counted in proportion to
+their particular ‘time cost’, and added up, with multiplication of integers typically considered
+much more expensive than their addition. In today’s world, where computers have become
+much faster, and often have dedicated floating-point hardware, the differences in time costs
+have become less important. However, we still we need to be careful when deciding to consider
+all operations as being equally costly – applying some function, for example, can take much
+longer than simply adding two numbers, and swaps generally take many times longer than
+comparisons. Just counting the most costly operations is often a good strategy.
+5.4 Big-O notation for complexity class
+Very often, we are not interested in the actual function C(n) that describes the time complex-
+ity of an algorithm in terms of the problem size n, but just its complexity class . This ignores
+any constant overheads and small constant factors, and just tells us about the principal growth
+26
+of the complexity function with problem size, and hence something about the performance of
+the algorithm on large numbers of items.
+If an algorithm is such that we may consider all steps equally costly, then usually the
+complexity class of the algorithm is simply determined by the number of loops and how often
+the content of those loops are being executed. The reason for this is that adding a constant
+number of instructions which does not change with the size of the problem has no significant
+effect on the overall complexity for large problems.
+There is a standard notation, called the Big-O notation, for expressing the fact that
+constant factors and other insignificant details are being ignored. For example, we saw that
+the procedure last(l) on a list l had time complexity that depended linearly on the size n of
+the list, so we would say that the time complexity of that algorithm is O(n). Similarly, linear
+search is O(n). For binary search, however, the time complexity is O(log2 n).
+Before we define complexity classes in a more formal manner, it is worth trying to gain
+some intuition about what they actually mean. For this purpose, it is useful to choose one
+function as a representative of each of the classes we wish to consider. Recall that we are
+considering functions which map natural numbers (the size of the problem) to the set of non-
+negative real numbers R+, so the classes will correspond to common mathematical functions
+such as powers and logarithms. We shall consider later to what degree a representative can
+be considered ‘typical’ for its class.
+The most common complexity classes (in increasing order) are the following:
+• O(1), pronounced ‘Oh of one’, or constant complexity;
+• O(log2 log2 n), ‘Oh of log log en’;
+• O(log2 n), ‘Oh of log en’, or logarithmic complexity;
+• O(n), ‘Oh of en’, or linear complexity;
+• O(nlog2 n), ‘Oh of en log en’;
+• O(n2), ‘Oh of en squared’, or quadratic complexity;
+• O(n3), ‘Oh of en cubed’, or cubic complexity;
+• O(2n), ‘Oh of two to the en’, or exponential complexity.
+As a representative, we choose the function which gives the class its name – e.g. for O(n) we
+choose the function f(n) = n, for O(log2 n) we choose f(n) = log2 n, and so on. So assume
+we have algorithms with these functions describing their complexity. The following table lists
+how many operations it will take them to deal with a problem of a given size:
+f(n) n = 4 n = 16 n = 256 n = 1024 n = 1048576
+1 1 1 1 1.00 ×100 1.00 ×100
+log2 log2 n 1 2 3 3.32 ×100 4.32 ×100
+log2 n 2 4 8 1.00 ×101 2.00 ×101
+n 4 16 2.56 ×102 1.02 ×103 1.05 ×106
+nlog2 n 8 64 2.05 ×103 1.02 ×104 2.10 ×107
+n2 16 256 6.55 ×104 1.05 ×106 1.10 ×1012
+n3 64 4096 1.68 ×107 1.07 ×109 1.15 ×1018
+2n 16 65536 1.16 ×1077 1.80 ×10308 6.74 ×10315652
+27
+Some of these numbers are so large that it is rather difficult to imagine just how long a
+time span they describe. Hence the following table gives time spans rather than instruction
+counts, based on the assumption that we have a computer which can operate at a speed of 1
+MIP, where one MIP = a million instructions per second:
+f(n) n = 4 n = 16 n = 256 n = 1024 n = 1048576
+1 1 μsec 1 μsec 1 μsec 1 μsec 1 μsec
+log2 log2 n 1 μsec 2 μsec 3 μsec 3.32 μsec 4.32 μsec
+log2 n 2 μsec 4 μsec 8 μsec 10 μsec 20 μsec
+n 4 μsec 16 μsec 256 μsec 1.02 msec 1.05 sec
+nlog2 n 8 μsec 64 μsec 2.05 msec 1.02 msec 21 sec
+n2 16 μsec 256 μsec 65.5 msec 1.05 sec 1.8 wk
+n3 64 μsec 4.1 msec 16.8 sec 17.9 min 36,559 yr
+2n 16 μsec 65.5 msec 3.7 ×1063 yr 5.7 ×10294 yr 2.1 ×10315639 yr
+It is clear that, as the sizes of the problems get really big, there can be huge differences
+in the time it takes to run algorithms from different complexity classes. For algorithms
+with exponential complexity, O(2n), even modest sized problems have run times that are
+greater than the age of the universe (about 1.4 ×1010 yr), and current computers rarely run
+uninterrupted for more than a few years. This is why complexity classes are so important –
+they tell us how feasible it is likely to be to run a program with a particular large number
+of data items. Typically, people do not worry much about complexity for sizes below 10, or
+maybe 20, but the above numbers make it clear why it is worth thinking about complexity
+classes where bigger applications are concerned.
+Another useful way of thinking about growth classes involves considering how the compute
+time will vary if the problem size doubles. The following table shows what happens for the
+various complexity classes:
+f(n) If the size of the problem doubles then f(n) will be
+1 the same, f(2n) = f(n)
+log2 log2 n almost the same, log2 (log2 (2n)) = log2 (log2 (n) + 1)
+log2 n more by 1 = log2 2, f(2n) = f(n) + 1
+n twice as big as before, f(2n) = 2f(n)
+nlog2 n a bit more than twice as big as before, 2nlog2 (2n) = 2(nlog2 n) + 2n
+n2 four times as big as before, f(2n) = 4f(n)
+n3 eight times as big as before, f(2n) = 8f(n)
+2n the square of what it was before, f(2n) = (f(n))2
+This kind of information can be very useful in practice. We can test our program on a problem
+that is a half or quarter or one eighth of the full size, and have a good idea of how long we
+will have to wait for the full size problem to finish. Moreover, that estimate won’t be affected
+by any constant factors ignored in computing the growth class, or the speed of the particular
+computer it is run on.
+The following graph plots some of the complexity class functions from the table. Note
+that although these functions are only defined on natural numbers, they are drawn as though
+they were defined for all real numbers, because that makes it easier to take in the information
+presented.
+28
+10 20 30 40 50 60 70 80 90 1000
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+log n 
+n 
+n log n 
+n2 
+2n It is clear from these plots why the non-principal growth terms can be safely ignored when
+computing algorithm complexity.
+5.5 Formal definition of complexity classes
+We have noted that complexity classes are concerned with growth , and the tables and graph
+above have provided an idea of what different behaviours mean when it comes to growth.
+There we have chosen a representative for each of the complexity classes considered, but we
+have not said anything about just how ‘representative’ such an element is. Let us now consider
+a more formal definition of a ‘big O’ class:
+Definition. A function g belongs to the complexity class O(f) if there is a number n0 ∈ N
+and a constant c > 0 such that for all n ≥n0, we have that g(n) ≤c ∗f(n). We say that the
+function g is ‘eventually smaller’ than the function c ∗f.
+It is not totally obvious what this implies. First, we do not need to know exactly when g
+becomes smaller than c ∗f. We are only interested in the existence of n0 such that, from
+then on, g is smaller than c ∗f. Second, we wish to consider the efficiency of an algorithm
+independently of the speed of the computer that is going to execute it. This is why f is
+multiplied by a constant c. The idea is that when we measure the time of the steps of a
+particular algorithm, we are not sure how long each of them takes. By definition, g ∈ O(f)
+means that eventually (namely beyond the point n0), the growth of g will be at most as much
+as the growth of c∗f. This definition also makes it clear that constant factors do not change
+the growth class (or O-class) of a function. Hence C(n) = n2 is in the same growth class as
+C(n) = 1/1000000 ∗n2 or C(n) = 1000000 ∗n2. So we can write O(n2) = O(1000000 ∗n2) =
+O(1/1000000 ∗n2). Typically, however, we choose the simplest representative, as we did in
+the tables above. In this case it is O(n2).
+29
+The various classes we mentioned above are related as follows:
+O(1) ⊆O(log2 log2 n) ⊆O(log2 (n)) ⊆O(n) ⊆O(nlog2 n) ⊆O(n2) ⊆O(n3) ⊆O(2n)
+We only consider the principal growth class, so when adding functions from different growth
+classes, their sum will always be in the larger growth class. This allows us to simplify terms.
+For example, the growth class of C(n) = 500000log2 n+ 4n2 + 0.3n+ 100 can be determined as
+follows. The summand with the largest growth class is 4n2 (we say that this is the ‘principal
+sub-term’ or ‘dominating sub-term’ of the function), and we are allowed to drop constant
+factors, so this function is in the class O(n2).
+When we say that an algorithm ‘belongs to’ some class O(f), we mean that it is at most
+as fast growing as f. We have seen that ‘linear searching’ (where one searches in a collection
+of data items which is unsorted) has linear complexity, i.e. it is in growth class O(n). This
+holds for the average case as well as the worst case. The operations needed are comparisons
+of the item we are searching for with all the items appearing in the data collection. In the
+worst case, we have to check all n entries until we find the right one, which means we make
+n comparisons. On average, however, we will only have to check n/2 entries until we hit the
+correct one, leaving us with n/2 operations. Both those functions, C(n) = n and C(n) = n/2
+belong to the same complexity class, namely O(n). However, it would be equally correct to
+say that the algorithm belongs to O(n2), since that class contains all of O(n). But this would
+be less informative, and we would not say that an algorithm has quadratic complexity if we
+know that, in fact, it is linear. Sometimes it is difficult to be sure what the exact complexity
+is (as is the case with the famous NP = P problem), in which case one might say that an
+algorithm is ‘at most’, say, quadratic.
+The issue of efficiency and complexity class, and their computation, will be a recurring
+feature throughout the chapters to come. We shall see that concentrating only on the com-
+plexity class, rather than finding exact complexity functions, can render the whole process of
+considering efficiency much easier. In most cases, we can determine the time complexity by
+a simple counting of the loops and tree heights. However, we will also see at least one case
+where that results in an overestimate, and a more exact computation is required
